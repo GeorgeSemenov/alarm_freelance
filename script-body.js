@@ -40,4 +40,4 @@ $(document).ready(function(){
       // snd.play();
     }
   }
-});
+});/*Конеч тела функции*/
