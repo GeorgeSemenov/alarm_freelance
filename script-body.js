@@ -14,7 +14,7 @@ $(document).ready(function(){
   let number_of_projects = project_nodes.length;
   let project_description;
 
-  for (i=0; i < number_of_projects ; i++){//Рабочий цикл.
+  for (let i=0; i < number_of_projects ; i++){//Рабочий цикл.
     let node = project_nodes[i];
 
     $(node).css({"background-color": "transparent"}); /*Удали эту запись*/ 
@@ -36,6 +36,7 @@ $(document).ready(function(){
       arr.push(desc);
       arr.splice(number_of_projects,arr.length); //Эта строка удаляет все элементы в хранимом массиве, после числа равного числу проектов на странице в данный момент
       $(node).css({"background-color": color_for_new_project});
+      alert('jyoba is awaiting you bomj');
       // var snd = new Audio("https://jegoteam.com/miscelenious/fart-sound.mp3"); 
       // snd.play();
     }
