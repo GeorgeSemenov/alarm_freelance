@@ -2,6 +2,8 @@
 //Чтобы подстроиться под другой фриланс сайт - нужно прописать правильный путь к хранилищу проектов и описать первые функции
 //Также, нужно понимать что локальное хранилище хранит данные как строка, а не как массив, поэтому приходится каждый раз преобразовывать туда и обратно.
 $(document).ready(function(){
+  /*Копировать отсюда*/
+
   let project_nodes = $('div > table > tbody > tr');/*массив узлов всех проектов*/
   function is_project_premium(node){ return ($(node).children().length == 1) } ;/*Условие премиальности*/
   function get_premium_project_description(node){return $(node).find('td > p').text()}
@@ -9,22 +11,22 @@ $(document).ready(function(){
   let color_for_new_project = "rgba(255,0,0,0.2)";/*в эту переменную ты вписываешь цвет, которым хочешь выделить новые прожекты*/
   let time_before_reload = 1000*60*2; //2 минуты в милисекундах
   let new_project_favicon_link = "https://jegoteam.com/miscelenious/icons/freelancehunt%20altered.webp";
+  let notification_title = "FREELANCEHUNT FREELANCEHUNT FREELANCEHUNT FREELANCEHUNT!";
 
-  var now = new Date();
+  let now = new Date();
   console.log(`Parse script startet at\n${now}`);/*для понимания, когда был запущен скрипт*/
 
   console.log(`Разрешение на уведомления = ${Notification.permission}`)
   if( Notification.permission === 'granted'){
-    showTime();
+    /*Сюда можно вставить код, при желании*/
   }else if(Notification.permission !== 'denied'){
     Notification.requestPermission().then(permission => {
       console.log(`permission = ${Notification.permission}`);
     })
   }
-
-  const SEPARATOR = '| >(-_-)< |';//Символ который будет использоваться для конвертации массива в строку и наоборот.
-  let premium_projects = localStorage.getItem('premium_projects')? localStorage.getItem('premium_projects').split(SEPARATOR) : [] ;/*массив премиальных проектов хранящийся в локальном хранилище*/
-  let projects =localStorage.getItem('projects')? localStorage.getItem('projects').split(SEPARATOR) : [] ; /*массив не премиальных проектов хранящийся в локальном хранилище*/
+  let notification_body;
+  let premium_projects = get_from_ls('premium_projects') ;/*массив премиальных проектов хранящийся в локальном хранилище*/
+  let projects = get_from_ls('projects'); /*массив не премиальных проектов хранящийся в локальном хранилище*/
   let number_of_projects = project_nodes.length;
   let project_description;
   let is_there_new_project_appear = false;
@@ -44,13 +46,15 @@ $(document).ready(function(){
   };
 
   if(is_there_new_project_appear){
-    alert(`There new job уджоба`);
     let link = document.querySelector("link[rel~='icon']");
     link.href = new_project_favicon_link;
+
+    push_notification();
+
+    set_to_ls('premium_projects', premium_projects);
+    set_to_ls('projects', projects);
   }
 
-  localStorage.setItem('premium_projects', premium_projects.join(SEPARATOR));
-  localStorage.setItem('projects', projects.join(SEPARATOR));
   // console.log(`premium_projects.length = ${premium_projects.length}\nprojects.length = ${projects.length}`);
 
   setTimeout(()=>{
@@ -61,12 +65,45 @@ $(document).ready(function(){
 
   function check_and_store(arr=[],desc,node){
     if(!arr.includes(desc)){
-      arr.push(desc);
+      console.log(`new project is = ${desc}`);
+      arr.unshift(desc);
       arr.splice(number_of_projects,arr.length); //Эта строка удаляет все элементы в хранимом массиве, после числа равного числу проектов на странице в данный момент
       $(node).css({"background-color": color_for_new_project});
       is_there_new_project_appear = true;
-      // var snd = new Audio("https://jegoteam.com/miscelenious/fart-sound.mp3"); 
-      // snd.play();
+      notification_body = desc;
     }
   }
+
+  function get_from_ls(ls_name){
+    try{
+      if (localStorage.getItem(ls_name) && localStorage.getItem(ls_name)!="undefined") {
+        let getted = JSON.parse(localStorage.getItem(ls_name));
+        console.log(`getted = ${getted.join(`\n<<<---`)}`);
+        return getted;
+      }else{
+        return [];
+      }
+    }catch(err){
+      console.log(`>>>\nThere is problem in getting from ${ls_name}\n${err}\n>>>`);
+      console.log(`localStorage.getItem(${ls_name}) = ${localStorage.getItem(ls_name)}`);
+    }
+  }
+  function set_to_ls(ls_name, stored){
+    console.log(`stored= ${stored.join(`\n---`)}`);
+    try {
+      if(stored && stored!="undefined"){
+        localStorage.setItem(ls_name, JSON.stringify(stored));
+      }else{
+        console.log(`you've tried to store incorrent object = ${stored}`);
+      }
+    }catch (err){console.log(`>>>\nThere is problem in storing to ${ls_name}\n${err}\n>>>`);}
+  }
+
+  function push_notification(){
+    const notification = new Notification(notification_title,{
+      body: notification_body
+    });
+    console.log("you have new projects");    
+  }
+  /*Копировать до сюда*/
 });/*Конеч тела функции*/
