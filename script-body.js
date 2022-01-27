@@ -4,12 +4,16 @@
 $(document).ready(function(){
   /*Копировать отсюда*/
 
+  // localStorage.clear(); // На случай, если нужно почитстить хранилистче
+
+  //Для freelancehunt
   let project_nodes = $('div > table > tbody > tr');/*массив узлов всех проектов*/
   function is_project_premium(node){ return ($(node).children().length == 1) } ;/*Условие премиальности*/
-  function get_premium_project_description(node){return $(node).find('td > p').text()}
-  function get_project_description(node){return $(node).find('td > a').data('original-title')}
+  function get_premium_project_description(node){return $(node).data('published')}
+  function get_project_description(node){return $(node).data('published')}
+  // function get_project_description(node){return $(node).find('td > a').data('original-title')}
   let color_for_new_project = "rgba(255,0,0,0.2)";/*в эту переменную ты вписываешь цвет, которым хочешь выделить новые прожекты*/
-  let time_before_reload = 1000*60*2; //2 минуты в милисекундах
+  let time_before_reload = 1000*60*1; //1 минута в милисекундах
   let new_project_favicon_link = "https://jegoteam.com/miscelenious/icons/freelancehunt%20altered.webp";
   let notification_title = "FREELANCEHUNT FREELANCEHUNT FREELANCEHUNT FREELANCEHUNT!";
 
@@ -33,8 +37,6 @@ $(document).ready(function(){
 
   for (let i=0; i < number_of_projects ; i++){//Рабочий цикл.
     let node = project_nodes[i];
-
-    $(node).css({"background-color": "transparent"}); /*Удали эту запись*/ 
 
     if(is_project_premium(node)){
       project_description = get_premium_project_description(node);
@@ -65,12 +67,12 @@ $(document).ready(function(){
 
   function check_and_store(arr=[],desc,node){
     if(!arr.includes(desc)){
-      console.log(`new project is = ${desc}`);
       arr.unshift(desc);
       arr.splice(number_of_projects,arr.length); //Эта строка удаляет все элементы в хранимом массиве, после числа равного числу проектов на странице в данный момент
       $(node).css({"background-color": color_for_new_project});
       is_there_new_project_appear = true;
       notification_body = desc;
+      console.log(`new project is = ${desc}`);
     }
   }
 
@@ -78,7 +80,6 @@ $(document).ready(function(){
     try{
       if (localStorage.getItem(ls_name) && localStorage.getItem(ls_name)!="undefined") {
         let getted = JSON.parse(localStorage.getItem(ls_name));
-        console.log(`getted = ${getted.join(`\n<<<---`)}`);
         return getted;
       }else{
         return [];
@@ -89,7 +90,6 @@ $(document).ready(function(){
     }
   }
   function set_to_ls(ls_name, stored){
-    console.log(`stored= ${stored.join(`\n---`)}`);
     try {
       if(stored && stored!="undefined"){
         localStorage.setItem(ls_name, JSON.stringify(stored));
